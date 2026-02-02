@@ -1,4 +1,4 @@
-# PDF-NN: Machine Learning for PDF Data Analysis
+# Explainable Machine Learning Insights into Molecular Clusters Nuclearity via Pair Distribution Function
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
