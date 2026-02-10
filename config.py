@@ -29,17 +29,17 @@ else:
 # DERIVED PATHS - DO NOT MODIFY UNLESS CHANGING DATA STRUCTURE
 # =============================================================================
 
-# Model clusters (ThxOy and CexOy)
+# Model clusters (CexOy)
 PATHS = {
-    # Thorium oxide clusters
-    "th_clusters": DATA_ROOT / "th_clusters",
-    "th_model_clusters": DATA_ROOT / "th_clusters" / "model_clusters",
-    "th_calculated_pdfs": DATA_ROOT / "th_clusters" / "calculated_pdfs",
-    
-    # Cerium oxide clusters  
+    # Cerium oxide clusters (Ce40 parent)
     "ce_clusters": DATA_ROOT / "ce_clusters",
     "ce_model_clusters": DATA_ROOT / "ce_clusters" / "model_clusters",
     "ce_calculated_pdfs": DATA_ROOT / "ce_clusters" / "calculated_pdfs",
+    
+    # Cerium oxide clusters (CeO2 parent)
+    "ceo2_clusters": DATA_ROOT / "ceo2_clusters",
+    "ceo2_model_clusters": DATA_ROOT / "ceo2_clusters" / "model_clusters",
+    "ceo2_calculated_pdfs": DATA_ROOT / "ceo2_clusters" / "calculated_pdfs",
     
     # CSD crystal structures
     "csd_structures": DATA_ROOT / "csd_structures",
@@ -52,7 +52,6 @@ PATHS = {
     
     # Trained models
     "models": DATA_ROOT / "models",
-    "th_models": DATA_ROOT / "models" / "th_clusters",
     "ce_models": DATA_ROOT / "models" / "ce_clusters",
     "csd_models": DATA_ROOT / "models" / "csd",
     
@@ -72,7 +71,7 @@ def get_path(key: str) -> Path:
     Parameters
     ----------
     key : str
-        The path key (e.g., 'th_clusters', 'experimental_pdfs')
+        The path key (e.g., 'ce_clusters', 'experimental_pdfs')
     
     Returns
     -------
@@ -142,7 +141,7 @@ def setup_workdir(path_key: str):
     Example
     -------
     >>> from config import setup_workdir
-    >>> setup_workdir('th_clusters')
+    >>> setup_workdir('ce_clusters')
     """
     import os
     target = get_path(path_key)
