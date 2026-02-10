@@ -3,9 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
-
 # Distribution / packaging
 .Python
 build/
@@ -23,6 +20,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+PUBLICATION_GUIDE.md
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
@@ -66,6 +64,8 @@ Thumbs.db
 # Environment files with sensitive paths
 .env
 .env.local
+.venv
+.venv311
 
 # Temporary files
 *.tmp
@@ -80,3 +80,8 @@ Thumbs.db
 !data/.gitkeep
 !models/.gitkeep
 !results/.gitkeep
+
+# PDF-NN training on objects outside the scope of the paper associated with this repository
+archived/
+thorium/
+recursive/

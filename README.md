@@ -8,8 +8,7 @@ Neural network-based classification of pair distribution function (PDF) data for
 ## Overview
 
 This repository contains the code and trained models for classifying PDF patterns of:
-- **Model ThxOy clusters** - Thorium-oxide polynuclear clusters with varying nuclearities
-- **Model CexOy clusters** - Cerium-oxide polynuclear clusters
+- **Model CexOy clusters** - Cerium-oxide polynuclear clusters with varying nuclearities (CeO2 and Ce40 parent structures)
 - **CSD crystal structures** - Crystalline compounds from the Cambridge Structural Database
 
 The workflow enables prediction of cluster nuclearity from PDF data.
@@ -21,16 +20,24 @@ PDF-NN/
 ├── config.py                 # Path configuration (MODIFY THIS FIRST)
 ├── requirements.txt          # Python dependencies
 ├── README.md                 # This file
+├── LICENSE                   # MIT License
+├── PUBLICATION_GUIDE.md      # Publication guidelines
 │
-├── complete_workflow/        # Main workflow notebooks (START HERE)
+├── complete workflow/        # Main workflow notebooks (START HERE)
 │   ├── 1-create-clusters.ipynb     # Create model clusters from parent structure
 │   ├── 2-prepare-PDF.ipynb         # Calculate PDFs from structures
-│   ├── 3-train-model-th.ipynb      # Train model on Th cluster PDFs
-│   ├── 3b-train-model-ce.ipynb     # Train model on Ce cluster PDFs
-│   ├── 4-train-model-CSD.ipynb     # Train model on CSD structure PDFs
-│   ├── 5-predict.ipynb             # Predict from experimental PDFs
-│   ├── descriptors-*.ipynb         # PDF/RDF descriptor analysis
+│   ├── 3A-train-model-ceo2.ipynb   # Train model on CeO2 cluster PDFs
+│   ├── 3B-train-model-ce40.ipynb   # Train model on Ce40 cluster PDFs
+│   ├── 3C-train-model-CSD.ipynb    # Train model on CSD structure PDFs
+│   ├── 4-predict.ipynb             # Predict from experimental PDFs
+│   ├── descriptors/                # PDF/RDF descriptor analysis
+│   │   ├── A-descriptors-CeO2.ipynb
+│   │   ├── B-descriptors-Ce40.ipynb
+│   │   └── C-descriptors-CSD.ipynb
 │   └── architecture_comparison/    # Model architecture experiments
+│       ├── 3C-train-model-CSD-minimal.ipynb
+│       ├── 3C-train-model-CSD-with-attention.ipynb
+│       └── README.md
 │
 └── utils/                    # Utility notebooks
     ├── cif-preparePDF.ipynb  # CIF file PDF preparation
@@ -50,12 +57,12 @@ After downloading, extract the data to your preferred location and update `confi
 
 ```
 pdf-nn-data/
-├── th_clusters/
-│   ├── model_clusters/       # .xyz files of ThxOy clusters
+├── ceo2_clusters/
+│   ├── model_clusters/       # .xyz files of CeO2-based clusters
 │   └── calculated_pdfs/      # .dat files with calculated PDFs
 │
 ├── ce_clusters/
-│   ├── model_clusters/       # .xyz files of CexOy clusters
+│   ├── model_clusters/       # .xyz files of Ce40-based clusters
 │   └── calculated_pdfs/      # .dat files with calculated PDFs
 │
 ├── csd_structures/
@@ -67,7 +74,7 @@ pdf-nn-data/
 │   └── processed/            # Interpolated _processed.gr files
 │
 └── models/
-    ├── th_clusters/          # Trained models for Th clusters
+    ├── ce_clusters/          # Trained models for Ce clusters
     └── csd/                  # Trained models for CSD structures
 ```
 
@@ -127,18 +134,18 @@ This will check that all data paths are accessible.
 The recommended way to use this code is through the notebooks in `complete_workflow/`:
 
 1. **Create model clusters** (`1-create-clusters.ipynb`):
-   - Generates ThxOy or CexOy clusters of varying sizes from a parent structure
+   - Generates CexOy clusters of varying sizes from a parent structure (CeO2 or Ce40)
 
 2. **Calculate PDFs** (`2-prepare-PDF.ipynb`):
    - Computes PDF patterns for model clusters and CSD structures
    - Prepares experimental PDFs for analysis
 
-3. **Train the model** (`3-train-model-th.ipynb`, `3b-train-model-ce.ipynb`, or `4-train-model-CSD.ipynb`):
+3. **Train the model** (`3A-train-model-ceo2.ipynb`, `3B-train-model-ce40.ipynb`, or `3C-train-model-CSD.ipynb`):
    - Hyperparameter tuning with Keras Tuner
    - Cross-validation training
    - Model evaluation
 
-4. **Make predictions** (`5-predict.ipynb`):
+4. **Make predictions** (`4-predict.ipynb`):
    - Load trained model
    - Predict nuclearity from experimental PDFs
 
@@ -148,12 +155,12 @@ To use the pre-trained models for prediction:
 
 ```python
 from config import get_path
-import keras
+import tensorflow.keras as keras
 from keras.utils import custom_object_scope
 from keras_self_attention import SeqSelfAttention
 
 # Load pre-trained model
-model_path = get_path('th_models') / 'best_model.hdf5'
+model_path = get_path('ce_models') / 'best_model.hdf5'
 with custom_object_scope({'SeqSelfAttention': SeqSelfAttention}):
     model = keras.models.load_model(model_path)
 
