@@ -8,14 +8,16 @@ Neural network-based classification of pair distribution function (PDF) data for
 ## Overview
 
 This repository contains the code and trained models for classifying PDF patterns of:
+
 - **Model CexOy clusters** - Cerium-oxide polynuclear clusters with varying nuclearities (CeO2 and Ce40 parent structures)
+
 - **CSD crystal structures** - Crystalline compounds from the Cambridge Structural Database
 
 The workflow enables prediction of cluster nuclearity from PDF data.
 
 ## Repository Structure
 
-```
+```structure
 PDF-NN/
 ├── config.py                 # Path configuration (MODIFY THIS FIRST)
 ├── requirements.txt          # Python dependencies
@@ -55,7 +57,7 @@ The data associated with this publication is available on Zenodo:
 
 After downloading, extract the data to your preferred location and update `config.py`:
 
-```
+```structure
 pdf-nn-data/
 ├── ceo2_clusters/
 │   ├── model_clusters/       # .xyz files of CeO2-based clusters
@@ -115,6 +117,7 @@ DATA_ROOT = "/path/to/your/pdf-nn-data"
 ```
 
 Or set via environment variable:
+
 ```bash
 export PDF_NN_DATA_ROOT="/path/to/your/pdf-nn-data"
 ```
