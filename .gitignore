@@ -20,7 +20,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-PUBLICATION_GUIDE.md
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
@@ -57,7 +56,7 @@ Thumbs.db
 
 # IDE settings
 .idea/
-.vscode/
+.vscode/settings.json
 *.swp
 *.swo
 
