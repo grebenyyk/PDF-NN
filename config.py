@@ -21,7 +21,7 @@ _CONFIG_DIR = Path(__file__).parent.resolve()
 # Example: DATA_ROOT = "/path/to/your/pdf-nn-data"
 DATA_ROOT = os.environ.get("PDF_NN_DATA_ROOT", None)
 if DATA_ROOT is None:
-    DATA_ROOT = Path("/Volumes/Extreme SSD/PDF NN/pdf-nn-data")
+    DATA_ROOT = Path("/workspace/home/pdf-nn-data")
 else:
     DATA_ROOT = Path(DATA_ROOT)
 

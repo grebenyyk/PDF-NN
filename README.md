@@ -23,7 +23,6 @@ PDF-NN/
 ├── requirements.txt          # Python dependencies
 ├── README.md                 # This file
 ├── LICENSE                   # MIT License
-├── PUBLICATION_GUIDE.md      # Publication guidelines
 │
 ├── complete workflow/        # Main workflow notebooks (START HERE)
 │   ├── 1-create-clusters.ipynb     # Create model clusters from parent structure
@@ -82,25 +81,33 @@ pdf-nn-data/
 
 ## Installation
 
+Tested on:
+- **OS:** Ubuntu 22.04.5 LTS (Jammy Jellyfish)
+- **Python:** 3.7.16
+- **TensorFlow:** 2.11.0
+
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/PDF-NN.git
+git clone https://github.com/grebenyyk/PDF-NN.git
 cd PDF-NN
 ```
 
 ### 2. Create a conda environment
 
 ```bash
-conda create -n pdfnn python=3.9
+conda create -n pdfnn python=3.7
 conda activate pdfnn
 ```
 
 ### 3. Install dependencies
 
 ```bash
-# Install DiffPy-CMI (required for PDF calculations)
+# Install DiffPy-CMI
 conda install -c diffpy diffpy-cmi
+
+# Install tensorflow
+pip install tensorflow
 
 # Install other dependencies
 pip install -r requirements.txt
@@ -185,12 +192,12 @@ The neural network uses a 1D CNN with self-attention:
 If you use this code or data in your research, please cite:
 
 ```bibtex
-@article{YOUR_PAPER,
-  title={Machine Learning Classification of PDF Data for Metal-Oxide Clusters},
-  author={Your Name et al.},
-  journal={Journal Name},
+@article{PDF-NN,
+  title={Explainable Machine Learning Insights into Molecular Clusters Nuclearity via Pair Distribution Function},
+  author={Grebenyuk et al.},
+  journal={},
   year={2026},
-  doi={YOUR_DOI}
+  doi={}
 }
 ```
 
