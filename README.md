@@ -177,16 +177,6 @@ with custom_object_scope({'SeqSelfAttention': SeqSelfAttention}):
 # Your prediction code here...
 ```
 
-## Model Architecture
-
-The neural network uses a 1D CNN with self-attention:
-
-- **Input**: Normalized PDF pattern (1000 points, r = 2-12 Å)
-- **Conv1D** layers for feature extraction
-- **Self-Attention** layer for capturing long-range correlations
-- **Dense** layers with dropout for classification
-- **Output**: Softmax classification (nuclearity classes)
-
 ## Citation
 
 If you use this code or data in your research, please cite:
