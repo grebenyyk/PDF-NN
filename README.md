@@ -3,7 +3,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Neural network-based classification of pair distribution function (PDF) data for predicting nuclearity of metal-oxide clusters.
+Neural network-based classification of pair distribution function (PDF) data for predicting nuclearity of lanthanide compounds.
 
 ## Overview
 
@@ -13,7 +13,7 @@ This repository contains the code and trained models for classifying PDF pattern
 
 - **CSD crystal structures** - Crystalline compounds from the Cambridge Structural Database
 
-The workflow enables prediction of cluster nuclearity from PDF data.
+The workflow enables prediction of nuclearity from PDF data.
 
 ## Repository Structure
 
@@ -170,9 +170,11 @@ from keras.utils import custom_object_scope
 from keras_self_attention import SeqSelfAttention
 
 # Load pre-trained model
-model_path = get_path('ce_models') / 'best_model.hdf5'
-with custom_object_scope({'SeqSelfAttention': SeqSelfAttention}):
-    model = keras.models.load_model(model_path)
+if use_attention:
+    with custom_object_scope({'SeqSelfAttention': SeqSelfAttention}):
+        load_model = keras.models.load_model(best_model_path)
+else:
+    load_model = keras.models.load_model(best_model_path)
 
 # Your prediction code here...
 ```
