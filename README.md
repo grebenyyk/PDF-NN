@@ -1,19 +1,18 @@
 # Explainable Machine Learning Insights into Molecular Clusters Nuclearity via Pair Distribution Function
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Neural network-based classification of pair distribution function (PDF) data for predicting nuclearity of lanthanide compounds.
 
 ## Overview
 
-This repository contains the code and trained models for classifying PDF patterns of:
+This repository contains the code for classifying PDF patterns of:
 
 - **Model CexOy clusters** - Cerium-oxide polynuclear clusters with varying nuclearities (CeO2 and Ce40 parent structures)
 
 - **CSD crystal structures** - Crystalline compounds from the Cambridge Structural Database
 
-The workflow enables prediction of nuclearity from PDF data.
+The workflow enables prediction of nuclearity from PDF data of lanthanide compounds.
 
 ## Repository Structure
 
@@ -48,7 +47,7 @@ PDF-NN/
 
 ## Data
 
-The data associated with this publication is available on Zenodo:
+The data and trained models associated with this publication is available on Zenodo:
 
 **DOI:** [10.5281/zenodo.XXXXXXX](https://doi.org/10.5281/zenodo.XXXXXXX)
 
