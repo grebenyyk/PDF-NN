@@ -70,11 +70,14 @@ pdf-nn-data/
 │   └── calculated_pdfs/      # .dat files with calculated PDFs
 │
 ├── experimental_pdfs/
-│   ├── raw/                  # Original .gr files
+│   ├──/                      # Original .gr files
 │   └── processed/            # Interpolated _processed.gr files
 │
 └── models/
-    ├── ce_clusters/          # Trained models for Ce clusters
+    ├── ce_clusters/          # Trained models for Ce40-based clusters
+    ├── ceo2_clusters/        # Trained models for CeO2-based clusters
+    ├── csd_minimal/          # Simple CNN models for CSD structures
+    ├── csd_no_attention/     # CNN without attention layer for CSD structures
     └── csd/                  # Trained models for CSD structures
 ```
 
