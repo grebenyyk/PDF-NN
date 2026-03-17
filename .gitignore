@@ -16,7 +16,7 @@ Thumbs.db
 # IDE settings
 .vscode/
 
-# PDF-NN training on objects outside the scope of the paper associated with this repository
+# Directories outside the scope of the paper associated with this repository
 archived/
 thorium/
 complete workflow/pdf-nn-data/
