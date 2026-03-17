@@ -18,12 +18,12 @@ The workflow enables prediction of nuclearity from PDF data of lanthanide compou
 
 ```structure
 PDF-NN/
-├── config.py                 # Path configuration (MODIFY THIS FIRST)
+├── config.py                 # Path configuration (needs to be modified before running)
 ├── requirements.txt          # Python dependencies
 ├── README.md                 # This file
 ├── LICENSE                   # MIT License
 │
-├── complete workflow/        # Main workflow notebooks (START HERE)
+├── complete workflow/        # Main workflow notebooks
 │   ├── 1-create-clusters.ipynb     # Create model clusters from parent structure
 │   ├── 2-prepare-PDF.ipynb         # Calculate PDFs from structures
 │   ├── 3A-train-model-ceo2.ipynb   # Train model on CeO2 cluster PDFs
