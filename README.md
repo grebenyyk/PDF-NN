@@ -19,7 +19,7 @@ python quick-predict.py /path/to/your/gr-files --model /path/to/model.h5
 python quick-predict.py /path/to/your/gr-files --output /path/to/results.csv
 ```
 
-The script recursively searches the input directory for `.gr` files, so subdirectories are included automatically. Input files must cover the 2–12 Å range; files that don't will be skipped with a warning. The default model is csd-9.h5 which is trained on CSD data in the `3C-train-model-CSD.ipynb` notbook.
+The script recursively searches the input directory for `.gr` files, so subdirectories are included automatically. Input files must cover the 2–12 Å range; files that don't will be skipped with a warning. The default model is csd-9.h5 which is trained on CSD data in the `3C-train-model-CSD.ipynb` notebook.
 
 ## Overview
 
