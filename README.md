@@ -4,15 +4,30 @@
 
 Neural network-based classification of pair distribution function (PDF) data for predicting nuclearity of lanthanide compounds.
 
+## Quick Start
+
+The quickest way to use the ML model for nuclearity prediction from your experimental PDF data is the `quick-predict.py` script. It handles preprocessing (header detection, interpolation to the model grid, normalization) and prediction in one step:
+
+```bash
+# Using the default model (default_model.h5 in the project root)
+python quick-predict.py /path/to/your/gr-files
+
+# Using a specific model
+python quick-predict.py /path/to/your/gr-files --model /path/to/model.h5
+
+# Custom output path (default: predictions.csv in the input directory)
+python quick-predict.py /path/to/your/gr-files --output /path/to/results.csv
+```
+
+The script recursively searches the input directory for `.gr` files, so subdirectories are included automatically. Input files must cover the 2–12 Å range; files that don't will be skipped with a warning. The default model is csd-9.h5 which is trained on CSD data in the `3C-train-model-CSD.ipynb` notbook.
+
 ## Overview
 
-This repository contains the code for classifying PDF patterns of:
+The repository contains the code for developing the machine learning models do predict the nuclearity from PDF data of:
 
 - **Model CexOy clusters** - Cerium-oxide polynuclear clusters with varying nuclearities (CeO2 and Ce40 parent structures)
 
 - **CSD crystal structures** - Crystalline compounds from the Cambridge Structural Database
-
-The workflow enables prediction of nuclearity from PDF data of lanthanide compounds.
 
 ## Repository Structure
 
@@ -66,11 +81,9 @@ pdf-nn-data/
 │   └── calculated_pdfs/      # .dat files with calculated PDFs
 │
 ├── csd_structures/
-│   ├── cifs/                 # .cif files from CSD
-│   └── calculated_pdfs/      # .dat files with calculated PDFs
+│   └── calculated_pdfs/      # .dat files with calculated PDFs from CSD .cif files
 │
-├── experimental_pdfs/
-│   ├──/                      # Original .gr files
+├── experimental_pdfs/        # Original .gr files
 │   └── processed/            # Interpolated _processed.gr files
 │
 └── models/
@@ -160,26 +173,6 @@ The recommended way to use this code is through the notebooks in `complete_workf
 4. **Make predictions** (`4-predict.ipynb`):
    - Load trained model
    - Predict nuclearity from experimental PDFs
-
-### Using pre-trained models
-
-To use the pre-trained models for prediction:
-
-```python
-from config import get_path
-import tensorflow.keras as keras
-from keras.utils import custom_object_scope
-from keras_self_attention import SeqSelfAttention
-
-# Load pre-trained model
-if use_attention:
-    with custom_object_scope({'SeqSelfAttention': SeqSelfAttention}):
-        load_model = keras.models.load_model(best_model_path)
-else:
-    load_model = keras.models.load_model(best_model_path)
-
-# Your prediction code here...
-```
 
 ## Citation
 
