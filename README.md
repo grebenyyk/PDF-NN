@@ -6,7 +6,7 @@ Neural network-based classification of pair distribution function (PDF) data for
 
 ## Quick Start
 
-The quickest way to use the ML model for nuclearity prediction from your experimental PDF data is the `quick-predict.py` script. It handles preprocessing (header detection, interpolation to the model grid, normalization) and prediction in one step:
+The quickest way to use the neural network trained within this work for nuclearity prediction from your experimental PDF data is the `quick-predict.py` script:
 
 ```bash
 # Using the default model (default_model.h5 in the project root)
@@ -19,7 +19,7 @@ python quick-predict.py /path/to/your/gr-files --model /path/to/model.h5
 python quick-predict.py /path/to/your/gr-files --output /path/to/results.csv
 ```
 
-The script recursively searches the input directory for `.gr` files, so subdirectories are included automatically. Input files must cover the 2–12 Å range; files that don't will be skipped with a warning. The default model is csd-9.h5 which is trained on CSD data in the `3C-train-model-CSD.ipynb` notebook.
+The script handles preprocessing (header detection, interpolation to the model grid, normalization) and prediction. It recursively searches the input directory for `.gr` files, so all subdirectories are included. Input files must cover the 2–12 Å r-range; files that don't will be skipped with a warning. The default model is csd-9.h5 which is trained in the `3C-train-model-CSD.ipynb` notebook on the calculated PDF data from the CSD crystal structures.
 
 ## Overview
 
