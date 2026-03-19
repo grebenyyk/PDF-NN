@@ -34,25 +34,27 @@ The repository contains the code for developing the machine learning models do p
 ```structure
 PDF-NN/
 ├── config.py                 # Path configuration (needs to be modified before running)
+├── quick-predict.py          # Use trained networks for nuclearity prediction
+├── *.h5                      # Default CSD-trained model
 ├── requirements.txt          # Python dependencies
 ├── README.md                 # This file
 ├── LICENSE                   # MIT License
 │
-├── complete workflow/        # Main workflow notebooks
+├── complete workflow/              # Main workflow notebooks
 │   ├── 1-create-clusters.ipynb     # Create model clusters from parent structure
 │   ├── 2-prepare-PDF.ipynb         # Calculate PDFs from structures
 │   ├── 3A-train-model-ceo2.ipynb   # Train model on CeO2 cluster PDFs
 │   ├── 3B-train-model-ce40.ipynb   # Train model on Ce40 cluster PDFs
 │   ├── 3C-train-model-CSD.ipynb    # Train model on CSD structure PDFs
-│   ├── 4-predict.ipynb             # Predict from experimental PDFs
-│   ├── descriptors/                # PDF/RDF descriptor analysis
+│   ├── descriptors/                # Structure-related PDF descriptors analysis
 │   │   ├── A-descriptors-CeO2.ipynb
 │   │   ├── B-descriptors-Ce40.ipynb
 │   │   └── C-descriptors-CSD.ipynb
 │   └── architecture_comparison/    # Model architecture experiments
 │       ├── 3C-train-model-CSD-minimal.ipynb
-│       ├── 3C-train-model-CSD-with-attention.ipynb
-│       └── README.md
+│       └── 3C-train-model-CSD-with-attention.ipynb
+│
+├── experimental data/        # Experimental PDF data used in the paper
 │
 └── utils/                    # Utility notebooks
     ├── cif-preparePDF.ipynb  # CIF file PDF preparation
@@ -82,9 +84,6 @@ pdf-nn-data/
 │
 ├── csd_structures/
 │   └── calculated_pdfs/      # .dat files with calculated PDFs from CSD .cif files
-│
-├── experimental_pdfs/        # Original .gr files
-│   └── processed/            # Interpolated _processed.gr files
 │
 └── models/
     ├── ce_clusters/          # Trained models for Ce40-based clusters
@@ -170,8 +169,7 @@ The recommended way to use this code is through the notebooks in `complete_workf
    - Cross-validation training
    - Model evaluation
 
-4. **Make predictions** (`4-predict.ipynb`):
-   - Load trained model
+4. **Make predictions** (`quick-predict.ipynb`):
    - Predict nuclearity from experimental PDFs
 
 ## Citation

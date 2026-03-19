@@ -20,3 +20,9 @@ Thumbs.db
 archived/
 thorium/
 complete workflow/pdf-nn-data/
+
+# Implemented the prediction via quick-predict.py, so the prediction notebook is no longer needed
+/complete workflow/4-predict.ipynb 
+
+# Old models
+csd-9.h5 
