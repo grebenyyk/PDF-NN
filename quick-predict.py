@@ -28,7 +28,7 @@ R_GRID = np.arange(R_MIN, R_MAX, R_STEP)
 
 # Default model filename in the same directory as this script
 SCRIPT_DIR = Path(__file__).parent.resolve()
-DEFAULT_MODEL = SCRIPT_DIR / "csd-9.h5"
+DEFAULT_MODEL = SCRIPT_DIR / "csd-3.h5"
 
 
 def parse_gr_file(filepath):
@@ -105,7 +105,7 @@ def main():
     parser.add_argument(
         "--model",
         default=None,
-        help="Path to trained .h5 model (default: csd-9.h5 in project root)",
+        help="Path to trained .h5 model (default: csd-3.h5 in project root)",
     )
     parser.add_argument(
         "--output",
@@ -124,7 +124,7 @@ def main():
     if not model_path.exists():
         msg = f"Error: Model not found at '{model_path}'."
         if not args.model:
-            msg += "\nProvide a model path with --model or place csd-9.h5 in the project root."
+            msg += "\nProvide a model path with --model or place csd-3.h5 in the project root."
         print(msg)
         sys.exit(1)
 
