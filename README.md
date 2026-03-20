@@ -19,7 +19,7 @@ python quick-predict.py /path/to/your/gr-files --model /path/to/model.h5
 python quick-predict.py /path/to/your/gr-files --output /path/to/results.csv
 ```
 
-The script handles preprocessing (header detection, interpolation to the model grid, normalization) and prediction. It recursively searches the input directory for `.gr` files, so all subdirectories are included. Input files must cover the 2–12 Å r-range; files that don't will be skipped with a warning. The default model is csd-9.h5 which is trained in the `3C-train-model-CSD.ipynb` notebook on the calculated PDF data from the CSD crystal structures.
+The script handles preprocessing (header detection, interpolation to the model grid, normalization) and prediction. It recursively searches the input directory for `.gr` files, so all subdirectories are included. Input files must cover the 2–12 Å r-range; files that don't will be skipped with a warning. The default model is csd-3.h5 which is trained in the `3C-train-model-CSD.ipynb` notebook on the calculated PDF data from the CSD crystal structures.
 
 ## Overview
 
