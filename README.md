@@ -96,6 +96,7 @@ pdf-nn-data/
 ## Installation
 
 Tested on:
+
 - **OS:** Ubuntu 22.04.5 LTS (Jammy Jellyfish)
 - **Python:** 3.7.16
 - **TensorFlow:** 2.11.0
@@ -150,8 +151,6 @@ python config.py
 ```
 
 This will check that all data paths are accessible.
-
-## Quick Start
 
 ### Using the complete workflow
 
