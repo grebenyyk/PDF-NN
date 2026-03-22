@@ -19,7 +19,7 @@ python quick-predict.py /path/to/your/gr-files --model /path/to/model.h5
 python quick-predict.py /path/to/your/gr-files --output /path/to/results.csv
 ```
 
-The script handles preprocessing (header detection, interpolation to the model grid, normalization) and prediction. It recursively searches the input directory for `.gr` files, so all subdirectories are included. Input files must cover the 2–12 Å r-range; files that don't will be skipped with a warning. The default model is csd-3.h5 which is trained in the `3C-train-model-CSD.ipynb` notebook on the calculated PDF data from the CSD crystal structures.
+The script handles preprocessing (header detection, interpolation to the model grid, normalization) and prediction. It recursively searches the input directory for `.gr` files, so all subdirectories are included. Input files must cover the 2–12 Å r-range; files that don't will be skipped with a warning. The default model is `csd-3.h5` which is trained in the `3C-train-model-CSD.ipynb` notebook on the calculated PDF data from the CSD crystal structures. The model `csd-3-minimal.h5` was trained on the same dataset but has a significantly more simple architecture (30 times less trainable parameters). While demonstrating similar test accuracy as the large model on a CSD dataset of calculated PDF data, its performance on real data is not on par with a `csd-3.h5`, so the latter is recommended for real-life usage. Refer to the text of the paper for details.
 
 ## Overview
 
@@ -35,16 +35,16 @@ The repository contains the code for developing the machine learning models do p
 PDF-NN/
 ├── config.py                 # Path configuration (needs to be modified before running)
 ├── quick-predict.py          # Use trained networks for nuclearity prediction
-├── *.h5                      # Default CSD-trained model
+├── *.h5                      # CSD-trained models
 ├── requirements.txt          # Python dependencies
 ├── README.md                 # This file
 ├── LICENSE                   # MIT License
 │
-├── complete workflow/              # Main workflow notebooks
+├── complete workflow/              # Main workflow notebooks for all the training
 │   ├── 1-create-clusters.ipynb     # Create model clusters from parent structure
 │   ├── 2-prepare-PDF.ipynb         # Calculate PDFs from structures
-│   ├── 3A-train-model-ceo2.ipynb   # Train model on CeO2 cluster PDFs
-│   ├── 3B-train-model-ce40.ipynb   # Train model on Ce40 cluster PDFs
+│   ├── 3A-train-model-ceo2.ipynb   # Train model on CeO2-based clusters PDFs
+│   ├── 3B-train-model-ce40.ipynb   # Train model on Ce40-based clusters PDFs
 │   ├── 3C-train-model-CSD.ipynb    # Train model on CSD structure PDFs
 │   ├── descriptors/                # Structure-related PDF descriptors analysis
 │   │   ├── A-descriptors-CeO2.ipynb
@@ -57,14 +57,14 @@ PDF-NN/
 ├── experimental data/        # Experimental PDF data used in the paper
 │
 └── utils/                    # Utility notebooks
-    ├── cif-preparePDF.ipynb  # CIF file PDF preparation
+    ├── cif-preparePDF.ipynb  # PDF preparation from .cif files
     └── plot-models.ipynb     # Model visualization
 
 ```
 
 ## Data
 
-The data and trained models associated with this publication is available on Zenodo:
+The trained models associated with this publication, calculated PDF data and clean notebooks for results reproduction are available on Zenodo:
 
 **DOI:** [10.5281/zenodo.XXXXXXX](https://doi.org/10.5281/zenodo.XXXXXXX)
 
@@ -152,9 +152,7 @@ python config.py
 
 This will check that all data paths are accessible.
 
-### Using the complete workflow
-
-The recommended way to use this code is through the notebooks in `complete_workflow/`:
+### Use the complete workflow
 
 1. **Create model clusters** (`1-create-clusters.ipynb`):
    - Generates CexOy clusters of varying sizes from a parent structure (CeO2 or Ce40)
