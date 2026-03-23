@@ -1,6 +1,6 @@
 # Explainable Machine Learning Insights into Molecular Clusters Nuclearity via Pair Distribution Function
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19173873.svg)](https://doi.org/10.5281/zenodo.19173873)
 
 Neural network-based classification of pair distribution function (PDF) data for predicting nuclearity of lanthanide compounds.
 
@@ -66,7 +66,7 @@ PDF-NN/
 
 The trained models associated with this publication, calculated PDF data and clean notebooks for results reproduction are available on Zenodo:
 
-**DOI:** [10.5281/zenodo.XXXXXXX](https://doi.org/10.5281/zenodo.XXXXXXX)
+**DOI:** [10.5281/zenodo.19173873](https://doi.org/10.5281/zenodo.19173873)
 
 ### Data Structure
 
@@ -130,7 +130,7 @@ pip install -r requirements.txt
 
 ### 4. Download and configure data
 
-1. Download data from Zenodo: [DOI_LINK]
+1. Download data from Zenodo: [10.5281/zenodo.19173873](https://doi.org/10.5281/zenodo.19173873)
 2. Extract to a location of your choice
 3. Edit `config.py` and set `DATA_ROOT` to your data location:
 
