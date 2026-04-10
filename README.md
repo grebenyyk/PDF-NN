@@ -1,4 +1,4 @@
-# Explainable Machine Learning Insights into Molecular Clusters Nuclearity via Pair Distribution Function
+# Explainable machine learning insights into molecular clusters nuclearity via pair distribution function
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19173873.svg)](https://doi.org/10.5281/zenodo.19173873)
 
