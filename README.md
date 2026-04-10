@@ -152,7 +152,7 @@ python config.py
 
 This will check that all data paths are accessible.
 
-### Use the complete workflow
+### Use the complete workflow for model training
 
 1. **Create model clusters** (`1-create-clusters.ipynb`):
    - Generates CexOy clusters of varying sizes from a parent structure (CeO2 or Ce40)
@@ -166,16 +166,13 @@ This will check that all data paths are accessible.
    - Cross-validation training
    - Model evaluation
 
-4. **Make predictions** (`quick-predict.ipynb`):
-   - Predict nuclearity from experimental PDFs
-
 ## Citation
 
 If you use this code or data in your research, please cite:
 
 ```bibtex
 @article{PDF-NN,
-  title={Explainable Machine Learning Insights into Molecular Clusters Nuclearity via Pair Distribution Function},
+  title={Explainable machine learning insights into molecular clusters nuclearity via pair distribution function},
   author={Grebenyuk et al.},
   journal={},
   year={2026},
