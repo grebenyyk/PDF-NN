@@ -35,6 +35,15 @@ The repository contains the code for developing the machine learning models do p
 PDF-NN/
 ├── config.py                 # Path configuration (needs to be modified before running)
 ├── quick-predict.py          # Use trained networks for nuclearity prediction
+├── scripts/                  # Standalone CLI python scripts (agentic-friendly)
+│   ├── pipeline_utils.py     # Shared configuration, data loading, and model builders
+│   ├── s1_create_clusters.py # Stage 1: Generate xyz clusters from parent structures
+│   ├── s2_prepare_pdf.py     # Stage 2: Calculate PDFs from xyz/experimental gr
+│   ├── s3_train_model.py     # Stage 3: Hyperparameter tuning and model training
+│   ├── s4_analyze_model.py   # Stage 4: Classification metrics, attention & saliency
+│   ├── cif_prepare_pdf.py    # Utility: CIF to PDF calculation with G(r) QC
+│   └── run_pipeline.py       # End-to-end pipeline runner
+├── notebooks/                # Notebook shims calling scripts (for interactive use)
 ├── *.h5                      # CSD-trained models
 ├── requirements.txt          # Python dependencies
 ├── README.md                 # This file
@@ -154,10 +163,34 @@ This will check that all data paths are accessible.
 
 ### Use the complete workflow for model training
 
-1. **Create model clusters** (`1-create-clusters.ipynb`):
+#### Option A: Python Scripts (Recommended for CLI / Automated workflows)
+
+The pipeline is available as modular Python scripts under `scripts/`:
+
+```bash
+# Stage 1: Create clusters (CeO2 or Ce40 parent structure)
+python scripts/s1_create_clusters.py --parent ceo2 --n-structures 10000
+
+# Stage 2: Calculate PDFs from clusters or process experimental data
+python scripts/s2_prepare_pdf.py ceo2
+python scripts/s2_prepare_pdf.py experimental
+
+# Stage 3: Train model (hyperparameter tuning + training)
+python scripts/s3_train_model.py --dataset ceo2
+
+# Stage 4: Analyze model (metrics, confusion matrix, attention, saliency maps)
+python scripts/s4_analyze_model.py --dataset ceo2 --model path/to/model.h5
+
+# Or run stages 1-3 end-to-end:
+python scripts/run_pipeline.py --dataset ceo2
+```
+
+#### Option B: Jupyter Notebooks (Interactive)
+
+1. **Create model clusters** (`1-create-clusters.ipynb` or `notebooks/1-create-clusters.ipynb`):
    - Generates CexOy clusters of varying sizes from a parent structure (CeO2 or Ce40)
 
-2. **Calculate PDFs** (`2-prepare-PDF.ipynb`):
+2. **Calculate PDFs** (`2-prepare-PDF.ipynb` or `notebooks/2-prepare-PDF.ipynb`):
    - Computes PDF patterns for model clusters and CSD structures
    - Prepares experimental PDFs for analysis
 
