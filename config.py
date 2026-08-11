@@ -65,6 +65,69 @@ PATHS = {
 }
 
 
+# =============================================================================
+# QRANGE STUDY (additive) - explore alternative (qmin, qmax) PDF-calculation
+# values without overwriting the baseline (qmin=0.3, qmax=11) published work.
+#
+# The existing PATHS dict above is unchanged: the baseline .dat files in the
+# bare calculated_pdfs/ directories are never touched by the qrange-study
+# notebooks. Each (qmin, qmax) pair writes to its own tagged, namespaced
+# directory (calculated_pdfs_qX-Y/, models/qX-Y/, ...) so multiple qranges
+# coexist on disk.
+# =============================================================================
+
+# (qmin, qmax) used in the published work - implicit in the existing PATHS
+BASELINE_QRANGE = (0.3, 11.0)
+
+# (qmin, qmax) pairs explored on the qrange-study branch
+QRANGE_PAIRS = [
+    (0.0, 11.0),
+    (1.0, 11.0),
+    (0.3, 25.0),
+    (0.3, 20.0),
+    (0.0, 25.0),
+]
+
+
+def qrange_tag(qmin, qmax):
+    """Filesystem-safe tag for a (qmin, qmax) pair, e.g. (0.3, 11) -> 'q0.3-11'."""
+    return f"q{qmin:g}-{qmax:g}"
+
+
+def qrange_paths(qmin, qmax):
+    """
+    Namespaced data/model/result paths for a given (qmin, qmax) pair.
+
+    Mirrors the keys used by get_path() so qrange-study notebooks can swap
+    get_path('key') -> qrange_paths(qmin, qmax)['key']. Every output path is
+    tagged so different qranges coexist on disk and never overwrite the
+    baseline. Read-only inputs (model_clusters, cifs) are shared, not tagged.
+    """
+    tag = qrange_tag(qmin, qmax)
+    return {
+        # Shared, read-only inputs (not tagged)
+        "ceo2_model_clusters": DATA_ROOT / "ceo2_clusters" / "model_clusters",
+        "ce_model_clusters": DATA_ROOT / "ce_clusters" / "model_clusters",
+        "csd_cifs": DATA_ROOT / "csd_structures" / "cifs",
+        "ceo2_clusters": DATA_ROOT / "ceo2_clusters",
+        "ce_clusters": DATA_ROOT / "ce_clusters",
+        "csd_structures": DATA_ROOT / "csd_structures",
+        # Tagged, per-qrange outputs
+        "ceo2_calculated_pdfs": DATA_ROOT / "ceo2_clusters" / f"calculated_pdfs_{tag}",
+        "ce_calculated_pdfs": DATA_ROOT / "ce_clusters" / f"calculated_pdfs_{tag}",
+        "csd_calculated_pdfs": DATA_ROOT / "csd_structures" / f"calculated_pdfs_{tag}",
+        "models": DATA_ROOT / "models" / tag,
+        "ce_models": DATA_ROOT / "models" / tag / "ce_clusters",
+        "csd_models": DATA_ROOT / "models" / tag / "csd",
+        "labels": DATA_ROOT / "labels" / tag,
+        "results": DATA_ROOT / "results" / tag,
+        "figures": DATA_ROOT / "results" / tag / "figures",
+        # Shared experimental data (qrange-independent)
+        "experimental_pdfs": DATA_ROOT / "experimental_pdfs",
+        "experimental_processed": DATA_ROOT / "experimental_pdfs" / "processed",
+    }
+
+
 def get_path(key: str) -> Path:
     """
     Get a path by key name.
