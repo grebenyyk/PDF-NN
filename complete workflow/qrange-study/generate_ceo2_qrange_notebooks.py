@@ -41,7 +41,13 @@ PARAMETER_PATTERN = re.compile(
 )
 
 sys.path.insert(0, str(PROJECT_ROOT))
-from config import QRANGE_PAIRS, qrange_paths, qrange_tag  # noqa: E402
+from config import (  # noqa: E402
+    BASELINE_QRANGE,
+    QRANGE_PAIRS,
+    get_path,
+    qrange_paths,
+    qrange_tag,
+)
 
 
 def parse_args(default_dataset: str = "ceo2") -> argparse.Namespace:
@@ -178,10 +184,14 @@ def ensure_controller(args: argparse.Namespace) -> None:
 
 
 def selected_pairs(only: list[str] | None) -> list[tuple[int, float, float, str]]:
-    available = [
-        (index, float(qmin), float(qmax), qrange_tag(qmin, qmax))
-        for index, (qmin, qmax) in enumerate(QRANGE_PAIRS)
-    ]
+    configured_pairs = [(-1, BASELINE_QRANGE), *enumerate(QRANGE_PAIRS)]
+    available = []
+    seen_tags = set()
+    for pair_index, (qmin, qmax) in configured_pairs:
+        tag = qrange_tag(qmin, qmax)
+        if tag not in seen_tags:
+            available.append((pair_index, float(qmin), float(qmax), tag))
+            seen_tags.add(tag)
     if not only:
         return available
 
@@ -228,13 +238,24 @@ def parameterize_notebook(
             f"Expected one PAIR_INDEX parameter block in the template; found {len(parameter_cells)}"
         )
 
+    pair_assignment = (
+        "PAIR_INDEX = None  # published baseline; QMIN/QMAX below are fixed"
+        if pair_index < 0
+        else f"PAIR_INDEX = {pair_index}  # index at generation time; QMIN/QMAX below are fixed"
+    )
     parameter_source = PARAMETER_PATTERN.sub(
-        (
-            f"PAIR_INDEX = {pair_index}  # index at generation time; QMIN/QMAX below are fixed\n"
-            f"QMIN, QMAX = ({qmin!r}, {qmax!r})"
-        ),
+        f"{pair_assignment}\nQMIN, QMAX = ({qmin!r}, {qmax!r})",
         source_text(parameter_cells[0]),
     )
+    if (qmin, qmax) == tuple(map(float, BASELINE_QRANGE)):
+        path_assignment = "_qrange = qrange_paths(QMIN, QMAX)"
+        if parameter_source.count(path_assignment) != 1:
+            raise ValueError("Expected one _qrange path assignment in the template")
+        pdf_path_key = dataset["pdf_path_key"]
+        parameter_source = parameter_source.replace(
+            path_assignment,
+            f"{path_assignment}\n_qrange[{pdf_path_key!r}] = get_path({pdf_path_key!r})",
+        )
     set_source(parameter_cells[0], parameter_source)
 
     first_markdown = next(cell for cell in notebook["cells"] if cell["cell_type"] == "markdown")
@@ -254,6 +275,7 @@ def parameterize_notebook(
         "qmax": qmax,
         "tag": tag,
         "template": dataset["template"],
+        "pdf_source": "baseline" if pair_index < 0 else "qrange",
     }
     clear_outputs(notebook)
     return notebook
@@ -370,7 +392,10 @@ def main(default_dataset: str = "ceo2") -> int:
             )
 
         if args.execute:
-            pdf_dir = qrange_paths(qmin, qmax)[dataset["pdf_path_key"]]
+            if pair_index < 0:
+                pdf_dir = get_path(dataset["pdf_path_key"])
+            else:
+                pdf_dir = qrange_paths(qmin, qmax)[dataset["pdf_path_key"]]
             if not pdf_dir.is_dir():
                 raise FileNotFoundError(f"PDF directory does not exist for {tag}: {pdf_dir}")
 
