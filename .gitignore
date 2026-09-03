@@ -21,6 +21,10 @@ archived/
 thorium/
 complete workflow/pdf-nn-data/
 
+# Generated q-range study exports
+/complete workflow/qrange-study/generated/*/*.pdf
+/complete workflow/qrange-study/generated/*/figures/**/*.png
+
 # Implemented the prediction via quick-predict.py, so the prediction notebook is no longer needed
 /complete workflow/4-predict.ipynb 
 
