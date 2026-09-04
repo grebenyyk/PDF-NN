@@ -6,15 +6,17 @@ on top of the published baseline work. Nothing here overwrites the baseline.
 
 ## Pairs explored
 
-Defined in `config.py` → `QRANGE_PAIRS`:
+The study compares the published baseline from `BASELINE_QRANGE` with the five
+additional pairs in `QRANGE_PAIRS`:
 
-| qmin | qmax | tag       |
-|------|------|-----------|
-| 0.0  | 11.0 | `q0-11`   |
-| 1.0  | 11.0 | `q1-11`   |
-| 0.3  | 25.0 | `q0.3-25` |
-| 0.3  | 20.0 | `q0.3-20` |
-| 0.0  | 25.0 | `q0-25`   |
+| qmin | qmax | tag | PDF source |
+| --- | --- | --- | --- |
+| 0.3 | 11.0 | `q0.3-11` | Published baseline `calculated_pdfs/` |
+| 0.0 | 11.0 | `q0-11` | Namespaced q-range directory |
+| 1.0 | 11.0 | `q1-11` | Namespaced q-range directory |
+| 0.3 | 25.0 | `q0.3-25` | Namespaced q-range directory |
+| 0.3 | 20.0 | `q0.3-20` | Namespaced q-range directory |
+| 0.0 | 25.0 | `q0-25` | Namespaced q-range directory |
 
 The published baseline `(qmin=0.3, qmax=11)` lives in the untagged
 `calculated_pdfs/` directories and is never written to by these notebooks.
@@ -35,13 +37,27 @@ So multiple pairs coexist on disk. The shared, read-only inputs (`model_clusters
 ## Notebooks
 
 | Notebook | Role |
-|----------|------|
+| --- | --- |
 | `2-prepare-PDF_qrange.ipynb` | Recalculates CeO2 + Ce40 cluster PDFs for **all** pairs in `QRANGE_PAIRS` (loops). |
 | `cif-preparePDF_qrange.ipynb` | Recalculates CSD PDFs for **one** pair (`PAIR_INDEX`). Run once per pair. |
-| `3A-train-model-ceo2_qrange.ipynb` | Train CeO2 model for one pair (`PAIR_INDEX`). |
-| `3B-train-model-ce40_qrange.ipynb` | Train Ce40 model for one pair (`PAIR_INDEX`). |
+| `3A-train-model-ceo2_qrange.ipynb` | Whole-PDF CeO2 training template using all 10,000 clusters. |
+| `3B-train-model-ce40_qrange.ipynb` | Whole-PDF Ce40 training template using all 10,000 clusters. |
 | `3C-train-model-CSD_qrange.ipynb` | Train CSD (no-attention) model for one pair (`PAIR_INDEX`). |
 | `A/B/C-descriptors-*_qrange.ipynb` | Descriptor analysis for one pair (`PAIR_INDEX`). |
+| `generate_whole_pdf_qrange_notebooks.py` | Generate fixed, output-free CeO2 and Ce40 training notebooks for all six ranges. |
+
+### Generating whole-PDF training notebooks
+
+Run from the repository root:
+
+```bash
+python "complete workflow/qrange-study/generate_whole_pdf_qrange_notebooks.py"
+```
+
+This creates six CeO2 notebooks under `generated/ceo2/` and six Ce40 notebooks
+under `generated/ce40/`. Each notebook uses stable filename ordering, labels
+derived in memory, deterministic stratified 80/10/10 splits, seed 42, and an
+independent Hyperband search. Generation does not execute the notebooks.
 
 ### Running a pair
 
