@@ -16,6 +16,9 @@ Thumbs.db
 # IDE settings
 .vscode/
 
+# Headless notebook execution logs
+logs/
+
 # Directories outside the scope of the paper associated with this repository
 archived/
 thorium/
