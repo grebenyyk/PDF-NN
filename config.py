@@ -127,6 +127,18 @@ def qrange_paths(qmin, qmax):
     }
 
 
+# =============================================================================
+# CSD LABELING STUDY (additive) - automatic-rule relabeling of the original
+# 645-structure CSD set (Task 1) and the csd2023 nodf pool (Task 2).
+# These paths namespace all new artifacts so the published csd_structures
+# pipeline (labels, calculated_pdfs, models) is never overwritten.
+# =============================================================================
+
+# Task 1: original 645 CSD PDFs retrained under automatic prepare_cifs.py labels
+# (labels file: <labels>/csd_labels_auto.txt, written by the 3C-auto-labels notebook)
+PATHS["csd_auto_labels_models"] = DATA_ROOT / "models" / "csd_auto_labels"
+
+
 def get_path(key: str) -> Path:
     """
     Get a path by key name.
