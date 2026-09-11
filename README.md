@@ -9,7 +9,7 @@ Neural network-based classification of pair distribution function (PDF) data for
 The quickest way to use the neural network trained within this work for nuclearity prediction from your experimental PDF data is the `quick-predict.py` script:
 
 ```bash
-# Using the default model (default_model.h5 in the project root)
+# Using the default predictor (csd2023 5-fold ensemble, models/csd2023_ensemble/)
 python quick-predict.py /path/to/your/gr-files
 
 # Using the 3C ensemble (2-12 Å input) instead
