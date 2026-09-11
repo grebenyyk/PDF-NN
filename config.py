@@ -138,6 +138,11 @@ def qrange_paths(qmin, qmax):
 # (labels file: <labels>/csd_labels_auto.txt, written by the 3C-auto-labels notebook)
 PATHS["csd_auto_labels_models"] = DATA_ROOT / "models" / "csd_auto_labels"
 
+# Task 2: csd2023 pool (cifs_nodf + nuclearity-1 additions), binned label scheme
+PATHS["csd2023_pool"] = DATA_ROOT / "csd2023" / "cifs_pool"
+PATHS["csd2023_calculated_pdfs"] = DATA_ROOT / "csd2023" / "calculated_pdfs"
+PATHS["csd2023_models"] = DATA_ROOT / "models" / "csd2023"
+
 
 def get_path(key: str) -> Path:
     """
