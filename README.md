@@ -12,14 +12,21 @@ The quickest way to use the neural network trained within this work for nucleari
 # Using the default model (default_model.h5 in the project root)
 python quick-predict.py /path/to/your/gr-files
 
-# Using a specific model
+# Using the 3C ensemble (2-12 Å input) instead
+python quick-predict.py /path/to/your/gr-files --ensemble 3c
+
+# Using a specific single model (legacy)
 python quick-predict.py /path/to/your/gr-files --model /path/to/model.h5
 
 # Custom output path (default: predictions.csv in the input directory)
 python quick-predict.py /path/to/your/gr-files --output /path/to/results.csv
 ```
 
-The script handles preprocessing (header detection, interpolation to the model grid, normalization) and prediction. It recursively searches the input directory for `.gr` files, so all subdirectories are included. Input files must cover the 2–12 Å r-range; files that don't will be skipped with a warning. The default model is `csd-3.h5` which is trained in the `3C-train-model-CSD.ipynb` notebook on the calculated PDF data from the CSD crystal structures. The model `csd-3-minimal.h5` was trained on the same dataset but has a significantly more simple architecture (30 times less trainable parameters). While demonstrating similar test accuracy as the large model on a CSD dataset of calculated PDF data, its performance on real data is not on par with a `csd-3.h5`, so the latter is recommended for real-life usage. Refer to the text of the paper for details.
+The script handles preprocessing (header detection, interpolation to the model grid, normalization) and prediction. It recursively searches the input directory for `.gr` files, so all subdirectories are included.
+
+The default predictor is the **csd2023 5-fold ensemble** (`models/csd2023_ensemble/`, trained in `3D-train-model-CSD-csd2023.ipynb` on 6806 CSD structures with PDFCalculator PDFs, full 0–20 Å input, classes 1–9 / 10+ / polymer). Prediction averages the softmax outputs of the five cross-validation folds. Input files must cover the 1–20 Å r-range; files that don't are skipped with a warning. Use `--ensemble 3c` for the 700-structure auto-labels ensemble (`models/csd_auto_labels_ensemble/`, 2–12 Å input, classes 1–9 / polymer).
+
+The legacy single model `csd-3.h5` (default before this change, trained in the `3C-train-model-CSD.ipynb` notebook) remains available via `--model csd-3.h5`. The model `csd-3-minimal.h5` was trained on the same dataset but has a significantly more simple architecture (30 times less trainable parameters). While demonstrating similar test accuracy as the large model on a CSD dataset of calculated PDF data, its performance on real data is not on par with a `csd-3.h5`. Refer to the text of the paper for details.
 
 ## Overview
 

@@ -3,8 +3,19 @@
 Predict nuclearity of lanthanide compounds from experimental PDF (.gr) files.
 
 Usage:
-    python quick-predict.py /path/to/gr/files
-    python quick-predict.py /path/to/gr/files --model /path/to/model.h5
+    python quick-predict.py /path/to/gr/files                     # csd2023 5-fold ensemble (default)
+    python quick-predict.py /path/to/gr/files --ensemble 3c       # 3C auto-labels ensemble (2-12 A)
+    python quick-predict.py /path/to/gr/files --model csd-3.h5    # legacy single model
+
+Model families differ in input grid, preprocessing and label mapping:
+    3d (default)  models/csd2023_ensemble/      0-20 A, 2000 pts, per-sample z-score,
+                                                 class = output index + 1 (10 = "10+", 11 = polymer)
+    3c            models/csd_auto_labels_ensemble/  2-12 A, 1000 pts, per-sample z-score,
+                                                 class = output index (10 = polymer; index 0 unused)
+    legacy --model                             2-12 A, 1000 pts, L2 normalization,
+                                                 class = output index (10 = polymer; index 0 unused)
+
+Ensemble prediction = mean of the five folds' softmax outputs.
 """
 
 import argparse
@@ -17,18 +28,38 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import Normalizer
 
-# Model grid: 1000 points from r=2.00 to r=11.99 Å, step 0.01
-R_MIN = 2.0
-R_MAX = 12.0
-R_STEP = 0.01
-N_POINTS = 1000
-R_GRID = np.arange(R_MIN, R_MAX, R_STEP)
-
-# Default model filename in the same directory as this script
 SCRIPT_DIR = Path(__file__).parent.resolve()
-DEFAULT_MODEL = SCRIPT_DIR / "csd-3.h5"
+
+# --- model families ---------------------------------------------------------
+# grid:   interpolation grid (start, stop, step)
+# cover:  r-range the input .gr must cover (below `cover[0]` the curve is
+#         clamped to its first value by np.interp, which is harmless: there
+#         are no structural peaks below ~1 A)
+# norm:   preprocessing used at training time
+# labels: how output indices map to classes
+FAMILIES = {
+    "3d": {
+        "dir": SCRIPT_DIR / "models" / "csd2023_ensemble",
+        "grid": (0.0, 20.0, 0.01),
+        "cover": (1.0, 20.0),
+        "norm": "z",
+        "labels": "plus1",
+    },
+    "3c": {
+        "dir": SCRIPT_DIR / "models" / "csd_auto_labels_ensemble",
+        "grid": (2.0, 12.0, 0.01),
+        "cover": (2.0, 12.0),
+        "norm": "z",
+        "labels": "index",
+    },
+    "legacy": {  # original csd-3.h5 via --model
+        "grid": (2.0, 12.0, 0.01),
+        "cover": (2.0, 12.0),
+        "norm": "l2",
+        "labels": "index",
+    },
+}
 
 
 def parse_gr_file(filepath):
@@ -78,23 +109,54 @@ def parse_gr_file(filepath):
     return np.array(r_vals), np.array(gr_vals)
 
 
-def interpolate_to_grid(r, gr):
-    """Interpolate experimental (r, g(r)) onto the model's 1000-point grid.
-
-    Returns the interpolated array of length 1000, or None if the input
-    data doesn't cover the required [2.0, 12.0) Å range.
-    """
-    tol = 0.05  # small tolerance for edge coverage
-    if r.min() > R_MIN + tol or r.max() < R_MAX - tol:
-        return None
-    return np.interp(R_GRID, r, gr)
+def preprocess(values, norm):
+    """Per-sample preprocessing exactly as used at training time."""
+    if norm == "z":
+        return (values - values.mean(axis=1, keepdims=True)) / values.std(
+            axis=1, keepdims=True
+        )
+    # legacy L2 row normalization
+    return values / np.linalg.norm(values, axis=1, keepdims=True)
 
 
-def pred_to_nuclearity(index):
+def pred_to_nuclearity(index, labels):
     """Map model output index to human-readable nuclearity label."""
+    if labels == "plus1":
+        cls = index + 1
+        if cls == 11:
+            return "polymer"
+        if cls == 10:
+            return "10+"
+        return str(cls)
+    # 'index' families: labels 1..10, output index 0 was never trained
+    if index == 0:
+        return "none"
     if index == 10:
         return "polymer"
     return str(index)
+
+
+def load_models(paths):
+    """Load keras models, registering SeqSelfAttention when available."""
+    import tensorflow as tf
+
+    tf.get_logger().setLevel("ERROR")
+
+    custom_objects = {}
+    try:
+        from keras_self_attention import SeqSelfAttention
+
+        custom_objects["SeqSelfAttention"] = SeqSelfAttention
+    except ImportError:
+        pass
+
+    from keras.utils import custom_object_scope
+
+    models = []
+    with custom_object_scope(custom_objects):
+        for p in paths:
+            models.append(tf.keras.models.load_model(str(p)))
+    return models
 
 
 def main():
@@ -103,9 +165,15 @@ def main():
     )
     parser.add_argument("input_dir", help="Directory containing .gr files")
     parser.add_argument(
+        "--ensemble",
+        default="3d",
+        help="'3d' (default, models/csd2023_ensemble), '3c' "
+        "(models/csd_auto_labels_ensemble), or a directory of fold_*.h5 models",
+    )
+    parser.add_argument(
         "--model",
         default=None,
-        help="Path to trained .h5 model (default: csd-3.h5 in project root)",
+        help="Single legacy .h5 model (e.g. csd-3.h5); overrides --ensemble",
     )
     parser.add_argument(
         "--output",
@@ -114,19 +182,35 @@ def main():
     )
     args = parser.parse_args()
 
-    # --- Resolve paths ---
+    # --- Resolve model family and paths ---
     input_dir = Path(args.input_dir).resolve()
     if not input_dir.is_dir():
         print(f"Error: '{args.input_dir}' is not a directory.")
         sys.exit(1)
 
-    model_path = Path(args.model).resolve() if args.model else DEFAULT_MODEL
-    if not model_path.exists():
-        msg = f"Error: Model not found at '{model_path}'."
-        if not args.model:
-            msg += "\nProvide a model path with --model or place csd-3.h5 in the project root."
-        print(msg)
-        sys.exit(1)
+    if args.model:
+        model_paths = [Path(args.model).resolve()]
+        if not model_paths[0].exists():
+            print(f"Error: Model not found at '{model_paths[0]}'.")
+            sys.exit(1)
+        family = dict(FAMILIES["legacy"])
+    else:
+        if args.ensemble in FAMILIES and args.ensemble != "legacy":
+            family = dict(FAMILIES[args.ensemble])
+        else:
+            ens_dir = Path(args.ensemble).resolve()
+            if not ens_dir.is_dir():
+                print(
+                    f"Error: --ensemble must be '3d', '3c' or a directory, "
+                    f"got '{args.ensemble}'."
+                )
+                sys.exit(1)
+            family = {"dir": ens_dir, "grid": None, "cover": None,
+                      "norm": "z", "labels": None}
+        model_paths = sorted(family["dir"].glob("fold_*.h5"))
+        if not model_paths:
+            print(f"Error: no fold_*.h5 models in '{family['dir']}'.")
+            sys.exit(1)
 
     # --- Find .gr files (recursive) ---
     gr_files = sorted(input_dir.rglob("*.gr"))
@@ -134,7 +218,26 @@ def main():
         print(f"No .gr files found in '{input_dir}'.")
         sys.exit(1)
 
-    print(f"Found {len(gr_files)} .gr file(s) in {input_dir}\n")
+    # --- Load models first (input shape determines the grid for custom ensembles) ---
+    print(f"Loading {len(model_paths)} model(s) from:"
+          f" {model_paths[0].parent if len(model_paths) > 1 else model_paths[0]}")
+    models = load_models(model_paths)
+
+    if family["grid"] is None:
+        # infer from the model's input length: 2000 -> 3D convention, else 2-12 A
+        n_in = models[0].input_shape[1]
+        if n_in == 2000:
+            family.update(grid=(0.0, 20.0, 0.01), cover=(1.0, 20.0), labels="plus1")
+        else:
+            family.update(grid=(2.0, 12.0, 0.01), cover=(2.0, 12.0), labels="index")
+
+    r_grid = np.arange(*family["grid"])
+    cover = family["cover"]
+    print(
+        f"Input grid: r = {family['grid'][0]:g}-{family['grid'][1]:g} A "
+        f"({len(r_grid)} pts) | preprocessing: {family['norm']} | "
+        f"labels: {'index+1' if family['labels'] == 'plus1' else 'index'}"
+    )
 
     # --- Parse & interpolate ---
     filenames = []
@@ -147,22 +250,22 @@ def main():
             skipped.append((str(gr_file.relative_to(input_dir)), "could not parse numeric data"))
             continue
 
-        interpolated = interpolate_to_grid(r, gr)
-        if interpolated is None:
+        tol = 0.05  # small tolerance for edge coverage
+        if r.min() > cover[0] + tol or r.max() < cover[1] - tol:
             skipped.append(
                 (
                     str(gr_file.relative_to(input_dir)),
                     f"r range [{r.min():.2f}, {r.max():.2f}] Å does not cover "
-                    f"the required [{R_MIN:.1f}, {R_MAX:.1f}] Å",
+                    f"the required [{cover[0]:g}, {cover[1]:g}] Å",
                 )
             )
             continue
 
         filenames.append(str(gr_file.relative_to(input_dir)))
-        data_rows.append(interpolated)
+        data_rows.append(np.interp(r_grid, r, gr))
 
     if skipped:
-        print(f"Skipped {len(skipped)} file(s):")
+        print(f"\nSkipped {len(skipped)} file(s):")
         for name, reason in skipped:
             print(f"  {name} — {reason}")
         print()
@@ -171,35 +274,17 @@ def main():
         print("No files could be processed. Exiting.")
         sys.exit(1)
 
-    data_points = np.array(data_rows)
+    data_points = preprocess(np.array(data_rows), family["norm"])[..., None].astype(
+        "float32"
+    )
 
-    # --- Normalize (L2, same as training) ---
-    data_points = Normalizer().fit_transform(data_points)
+    # --- Predict (ensemble = mean of softmax outputs) ---
+    probs = [m.predict(data_points, verbose=0) for m in models]
+    y_pred_prob = np.mean(probs, axis=0)
 
-    # --- Load model ---
-    print(f"Loading model: {model_path.name}")
-    import tensorflow as tf
-
-    tf.get_logger().setLevel("ERROR")
-
-    # Always register SeqSelfAttention if available, so models with or
-    # without the attention layer can be loaded transparently.
-    custom_objects = {}
-    try:
-        from keras_self_attention import SeqSelfAttention
-        custom_objects["SeqSelfAttention"] = SeqSelfAttention
-    except ImportError:
-        pass
-
-    if custom_objects:
-        from keras.utils import custom_object_scope
-        with custom_object_scope(custom_objects):
-            model = tf.keras.models.load_model(str(model_path))
-    else:
-        model = tf.keras.models.load_model(str(model_path))
-
-    # --- Predict ---
-    y_pred_prob = model.predict(data_points, verbose=0)
+    if family["labels"] == "index":
+        # output index 0 was never trained - mask it out of the ranking
+        y_pred_prob[:, 0] = -1.0
 
     top2_idx = np.argsort(y_pred_prob, axis=1)[:, -2:][:, ::-1]
     top2_prob = np.take_along_axis(y_pred_prob, top2_idx, axis=1)
@@ -213,8 +298,8 @@ def main():
 
     results = []
     for i, fname in enumerate(filenames):
-        nuc1 = pred_to_nuclearity(top2_idx[i, 0])
-        nuc2 = pred_to_nuclearity(top2_idx[i, 1])
+        nuc1 = pred_to_nuclearity(top2_idx[i, 0], family["labels"])
+        nuc2 = pred_to_nuclearity(top2_idx[i, 1], family["labels"])
         conf1 = top2_prob[i, 0]
         conf2 = top2_prob[i, 1]
 
